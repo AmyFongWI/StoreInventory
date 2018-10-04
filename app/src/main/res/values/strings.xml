@@ -16,5 +16,13 @@
     <string name="category_supplier">Supplier</string>
     <string name="hint_supplier_name">Name</string>
     <string name="hint_supplier_phone_number">Phone number</string>
+    
+    <string name="Sale">Sale</string>
+
+    <!-- Title text for the empty view, which describes the empty dog house image [CHAR LIMIT=50] -->
+    <string name="empty_view_title_text">There are no items in the inventory.</string>
+
+    <!-- Subtitle text for the empty view that prompts the user to add a pet [CHAR LIMIT=50] -->
+    <string name="empty_view_subtitle_text">Get started by adding a item.</string>
 
 </resources>

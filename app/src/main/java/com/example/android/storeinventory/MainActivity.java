@@ -1,24 +1,46 @@
 package com.example.android.storeinventory;
 
+import android.app.LoaderManager;
 import android.content.ContentValues;
+import android.content.CursorLoader;
 import android.content.Intent;
+import android.content.Loader;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.android.storeinventory.data.InventoryContract.InventoryEntry;
 import com.example.android.storeinventory.data.InventoryDbHelper;
 
-public class MainActivity extends AppCompatActivity {
+
+public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
+
+    private View mEmptyStateTextView;
+    private ListView mInventoryListView;
+
+    /** Identifier for the inventory data loader */
+    private static final int INTEVENTORY_LOADER = 0;
+
+    InventoryCursorAdapter mInventoryCursorAdapter;
+
+    // Define a projection that specifies which columns from the database
+    // you will actually use after this query.
+    static final String[] projection = {
+            InventoryEntry._ID,
+            InventoryEntry.COLUMN_PRODUCT_NAME,
+            InventoryEntry.COLUMN_QUANTITY,
+            InventoryEntry.COLUMN_SUPPLIER_NAME,
+            InventoryEntry.COLUMN_SUPPLIER_PHONE_NUMBER};
 
     private InventoryDbHelper mDbHelper;
 
@@ -39,6 +61,19 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        // Create an empty adapter we will use to display the loaded data.
+        // We pass null for the cursor, then update it in onLoadFinished()
+        mInventoryListView = (ListView) findViewById(R.id.list);
+
+        mEmptyStateTextView = findViewById(R.id.empty_view);
+        mInventoryListView.setEmptyView(mEmptyStateTextView);
+
+        mInventoryCursorAdapter = new InventoryCursorAdapter(this, null);
+        // Attach the adapter to the ListView.
+        mInventoryListView.setAdapter(mInventoryCursorAdapter);
+
+        getLoaderManager().initLoader(INTEVENTORY_LOADER, null, this);
+
         mDbHelper = new InventoryDbHelper(this);
     }
 
@@ -46,7 +81,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
         // update the database count whenever the MainActivity starts, not just onCreate
-        displayDatabaseInfo();
     }
 
     @Override
@@ -66,7 +100,6 @@ public class MainActivity extends AppCompatActivity {
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_insert_generic_entry) {
             insertGenericInventoryItem();
-            displayDatabaseInfo();
             return true;
         }
 
@@ -96,64 +129,19 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void displayDatabaseInfo() {
-        SQLiteDatabase db = mDbHelper.getReadableDatabase();
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        return new CursorLoader(this, InventoryEntry.CONTENT_URI, projection, null, null, null);
+    }
 
-        String[] projection = {
-                InventoryEntry._ID,
-                InventoryEntry.COLUMN_PRODUCT_NAME,
-                InventoryEntry.COLUMN_PRICE,
-                InventoryEntry.COLUMN_QUANTITY,
-                InventoryEntry.COLUMN_SUPPLIER_NAME,
-                InventoryEntry.COLUMN_SUPPLIER_PHONE_NUMBER};
+    @Override
+    public void onLoadFinished(@NonNull Loader<Cursor> loader, Cursor data) {
+        mInventoryCursorAdapter.swapCursor(data);
 
-        Cursor cursor = db.query(InventoryEntry.TABLE_NAME,
-                projection,
-                null,
-                null,
-                null,
-                null,
-                null);
+    }
 
-        TextView displayView = (TextView) findViewById(R.id.text_view_inventory);
-
-        try {
-            displayView.setText("The store inventory has " + cursor.getCount() + " item(s).\n\n");
-
-            displayView.append(InventoryEntry._ID + " - " +
-                    InventoryEntry.COLUMN_PRODUCT_NAME + " - " +
-                    InventoryEntry.COLUMN_PRICE + " - " +
-                    InventoryEntry.COLUMN_QUANTITY + " - " +
-                    InventoryEntry.COLUMN_SUPPLIER_NAME + " - " +
-                    InventoryEntry.COLUMN_SUPPLIER_PHONE_NUMBER + "\n"
-            );
-
-            int idColumnIndex = cursor.getColumnIndex(InventoryEntry._ID);
-            int productNameColumnIndex = cursor.getColumnIndex(InventoryEntry.COLUMN_PRODUCT_NAME);
-            int priceColumnIndex = cursor.getColumnIndex(InventoryEntry.COLUMN_PRICE);
-            int quantityColumnIndex = cursor.getColumnIndex(InventoryEntry.COLUMN_QUANTITY);
-            int supplierNameColumnIndex = cursor.getColumnIndex(InventoryEntry.COLUMN_SUPPLIER_NAME);
-            int supperPhoneNumberColumnIndex = cursor.getColumnIndex(InventoryEntry.COLUMN_SUPPLIER_PHONE_NUMBER);
-
-            while (cursor.moveToNext()) {
-                int currentID = cursor.getInt(idColumnIndex);
-                String currentProductName = cursor.getString(productNameColumnIndex);
-                int currentPrice = cursor.getInt(priceColumnIndex);
-                int currentQuantity = cursor.getInt(quantityColumnIndex);
-                String currentSupplierName = cursor.getString(supplierNameColumnIndex);
-                String currentlySupplierPhoneNumber = cursor.getString(supperPhoneNumberColumnIndex);
-
-                displayView.append(("\n" + currentID + " - " +
-                        currentProductName + " - " +
-                        currentPrice + " - " +
-                        currentQuantity + " - " +
-                        currentSupplierName + " - " +
-                        currentlySupplierPhoneNumber
-                ));
-            }
-        } finally {
-            cursor.close();
-        }
-
+    @Override
+    public void onLoaderReset(@NonNull Loader<Cursor> loader) {
+        mInventoryCursorAdapter.swapCursor(null);
     }
 }
