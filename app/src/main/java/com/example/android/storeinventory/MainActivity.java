@@ -1,12 +1,14 @@
 package com.example.android.storeinventory;
 
 import android.app.LoaderManager;
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -15,6 +17,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -41,8 +44,6 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
             InventoryEntry.COLUMN_QUANTITY,
             InventoryEntry.COLUMN_SUPPLIER_NAME,
             InventoryEntry.COLUMN_SUPPLIER_PHONE_NUMBER};
-
-    private InventoryDbHelper mDbHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,15 +73,22 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         // Attach the adapter to the ListView.
         mInventoryListView.setAdapter(mInventoryCursorAdapter);
 
+        mInventoryListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+                // Create new intent to go to {@link EditorActivity}
+                Intent intent = new Intent(MainActivity.this, AddInventoryItemActivity.class);
+
+                Uri currentInventoryUri = ContentUris.withAppendedId(InventoryEntry.CONTENT_URI, id);
+
+                // Set the URI on the data field of the intent
+                intent.setData(currentInventoryUri);
+
+                // Launch the {@link EditorActivity} to display the data for the current pet.
+                startActivity(intent);
+            }
+        });
         getLoaderManager().initLoader(INTEVENTORY_LOADER, null, this);
-
-        mDbHelper = new InventoryDbHelper(this);
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        // update the database count whenever the MainActivity starts, not just onCreate
     }
 
     @Override
@@ -107,8 +115,6 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     }
 
     public void insertGenericInventoryItem() {
-        SQLiteDatabase db = mDbHelper.getWritableDatabase();
-
         ContentValues values = new ContentValues();
 
         values.put(InventoryEntry.COLUMN_PRODUCT_NAME, "Wunderbar Foobar");
@@ -117,16 +123,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         values.put(InventoryEntry.COLUMN_SUPPLIER_NAME, "Acme Inc.");
         values.put(InventoryEntry.COLUMN_SUPPLIER_PHONE_NUMBER, "408-555-1234");
 
-        long newRowId = db.insert(InventoryEntry.TABLE_NAME, null, values);
-
-        // Show a toast message depending on whether or not the insertion was successful
-        if (newRowId == -1) {
-            // If the row ID is -1, then there was an error with insertion.
-            Toast.makeText(this, "Error with saving inventory item", Toast.LENGTH_SHORT).show();
-        } else {
-            // Otherwise, the insertion was successful and we can display a toast with the row ID.
-            Toast.makeText(this, "Inventory item saved with row id: " + newRowId, Toast.LENGTH_SHORT).show();
-        }
+        Uri newUri = getContentResolver().insert(InventoryEntry.CONTENT_URI, values);
     }
 
     @Override
@@ -135,13 +132,12 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     }
 
     @Override
-    public void onLoadFinished(@NonNull Loader<Cursor> loader, Cursor data) {
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         mInventoryCursorAdapter.swapCursor(data);
-
     }
 
     @Override
-    public void onLoaderReset(@NonNull Loader<Cursor> loader) {
+    public void onLoaderReset(Loader<Cursor> loader) {
         mInventoryCursorAdapter.swapCursor(null);
     }
 }
