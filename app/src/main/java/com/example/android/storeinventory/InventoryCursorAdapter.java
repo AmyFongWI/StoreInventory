@@ -45,17 +45,15 @@ public class InventoryCursorAdapter extends CursorAdapter {
     public void bindView(View view, Context context, Cursor cursor) {
         // Find fields to populate
         TextView tvName = (TextView) view.findViewById(R.id.name);
+        TextView tvPrice = (TextView) view.findViewById(R.id.price);
         TextView tvQuantity = (TextView) view.findViewById(R.id.quantity);
 
         String name = cursor.getString(cursor.getColumnIndexOrThrow(InventoryEntry.COLUMN_PRODUCT_NAME));
+        String price = cursor.getString(cursor.getColumnIndexOrThrow(InventoryEntry.COLUMN_PRICE));
         String quantity = cursor.getString(cursor.getColumnIndexOrThrow(InventoryEntry.COLUMN_QUANTITY));
 
         tvName.setText(name);
+        tvPrice.setText(price);
         tvQuantity.setText(quantity);
-
-        // Update the TextViews with the attributes for the current pet
-        tvName.setText(name);
-        tvQuantity.setText(quantity);
-
     }
 }
