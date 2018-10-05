@@ -61,7 +61,12 @@
             android:fontFamily="sans-serif"
             android:textAppearance="?android:textAppearanceSmall"
             android:textColor="#AEB6BD" />
-
     </LinearLayout>
+    <Button
+        android:id="@+id/sale_button"
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:text="@string/Sale"/>
 
 </LinearLayout>

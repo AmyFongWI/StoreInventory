@@ -19,6 +19,7 @@
 
         <!-- Input fields -->
         <LinearLayout
+            android:id="@+id/edit_productFields"
             android:layout_height="wrap_content"
             android:layout_width="0dp"
             android:layout_weight="2"
@@ -42,6 +43,32 @@
                 style="@style/EditorFieldStyle" />
 
         </LinearLayout>
+
+        <!-- Display fields -->
+        <LinearLayout
+            android:id="@+id/display_productFields"
+            android:layout_height="wrap_content"
+            android:layout_width="0dp"
+            android:layout_weight="2"
+            android:paddingLeft="4dp"
+            android:orientation="vertical"
+            android:visibility="gone">
+            <TextView
+                android:id="@+id/display_productName"
+                android:hint="@string/hint_product_name"
+                android:padding="9dp"
+                style="@style/EditorFieldStyle" />
+            <TextView
+                android:id="@+id/display_productPrice"
+                android:hint="@string/hint_product_price"
+                android:padding="9dp"
+                style="@style/EditorFieldStyle" />
+            <TextView
+                android:id="@+id/display_productQuantity"
+                android:hint="@string/hint_product_quantity"
+                android:padding="9dp"
+                style="@style/EditorFieldStyle" />
+        </LinearLayout>
     </LinearLayout>
 
     <LinearLayout
@@ -55,26 +82,44 @@
 
         <!-- Input fields -->
         <LinearLayout
+            android:id="@+id/edit_supplierFields"
             android:layout_height="wrap_content"
             android:layout_width="0dp"
             android:layout_weight="2"
             android:paddingLeft="4dp"
             android:orientation="vertical">
-
             <EditText
                 android:id="@+id/edit_supplierName"
                 android:hint="@string/hint_supplier_name"
                 android:inputType="textCapWords"
                 style="@style/EditorFieldStyle" />
-
             <EditText
                 android:id="@+id/edit_supplierPhoneNumber"
                 style="@style/EditorFieldStyle"
                 android:hint="@string/hint_supplier_phone_number"
                 android:inputType="textCapWords|phone" />
-
-
         </LinearLayout>
+        <!-- Display fields -->
+        <LinearLayout
+            android:id="@+id/display_supplierFields"
+            android:layout_height="wrap_content"
+            android:layout_width="0dp"
+            android:layout_weight="2"
+            android:paddingLeft="4dp"
+            android:orientation="vertical"
+            android:visibility="gone">
+            <TextView
+                android:id="@+id/display_supplierName"
+                android:hint="@string/hint_supplier_name"
+                android:padding="9dp"
+                style="@style/EditorFieldStyle" />
+            <TextView
+                android:id="@+id/display_supplierPhone"
+                android:hint="@string/hint_supplier_phone_number"
+                android:padding="9dp"
+                style="@style/EditorFieldStyle" />
+        </LinearLayout>
+
     </LinearLayout>
 
 

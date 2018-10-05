@@ -12,16 +12,22 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.AdapterView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.example.android.storeinventory.data.InventoryContract.InventoryEntry;
 
 
 public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
+
+    private static final String LOG_TAG = MainActivity.class.getName();
+
 
     private View mEmptyStateTextView;
     private ListView mInventoryListView;
@@ -80,7 +86,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                 // Set the URI on the data field of the intent
                 intent.setData(currentInventoryUri);
 
-                // Launch the {@link EditorActivity} to display the data for the current pet.
+                // Launch the {@link EditInventoryItemActivitu} to display the data for the current item.
                 startActivity(intent);
             }
         });
@@ -96,17 +102,14 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_insert_generic_entry) {
-            insertGenericInventoryItem();
-            return true;
+        switch (item.getItemId()) {
+            case R.id.action_insert_generic_entry:
+                insertGenericInventoryItem();
+                return true;
+            case R.id.action_delete_all_entries:
+                deleteAllItems();
+                return true;
         }
-
         return super.onOptionsItemSelected(item);
     }
 
@@ -135,5 +138,13 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
         mInventoryCursorAdapter.swapCursor(null);
+    }
+
+    /**
+     * Helper method to delete all items in the database.
+     */
+    private void deleteAllItems() {
+        int rowsDeleted = getContentResolver().delete(InventoryEntry.CONTENT_URI, null, null);
+        Log.v(LOG_TAG, rowsDeleted + " rows deleted from inventory database");
     }
 }

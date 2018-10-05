@@ -1,17 +1,27 @@
 package com.example.android.storeinventory;
 
+import android.content.ContentUris;
+import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
+import android.net.Uri;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.CursorAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.android.storeinventory.data.InventoryContract.InventoryEntry;
 
 public class InventoryCursorAdapter extends CursorAdapter {
+
+    private static final String LOG_TAG = InventoryCursorAdapter.class.getName();
+
 
     public InventoryCursorAdapter(Context context, Cursor c) {
         super(context, c, 0 /* flags */);
@@ -42,7 +52,7 @@ public class InventoryCursorAdapter extends CursorAdapter {
      *                correct row.
      */
     @Override
-    public void bindView(View view, Context context, Cursor cursor) {
+    public void bindView(View view, final Context context, final Cursor cursor) {
         // Find fields to populate
         TextView tvName = (TextView) view.findViewById(R.id.name);
         TextView tvPrice = (TextView) view.findViewById(R.id.price);
@@ -52,8 +62,49 @@ public class InventoryCursorAdapter extends CursorAdapter {
         String price = cursor.getString(cursor.getColumnIndexOrThrow(InventoryEntry.COLUMN_PRICE));
         String quantity = cursor.getString(cursor.getColumnIndexOrThrow(InventoryEntry.COLUMN_QUANTITY));
 
+
+        Button saleButton = (Button) view.findViewById(R.id.sale_button);
+
+         final int position = cursor.getPosition();
+
+        saleButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Perform action on click
+                cursor.moveToPosition(position);
+
+                int quantityInteger = cursor.getInt(cursor.getColumnIndexOrThrow(InventoryEntry.COLUMN_QUANTITY));
+
+                Log.i(LOG_TAG, "Inside on Click " + cursor.getPosition() + " with quantity: " + quantityInteger );
+
+                if(quantityInteger > 0) {
+                    quantityInteger--;
+
+                    ContentValues values = new ContentValues();
+                    values.put(InventoryEntry.COLUMN_QUANTITY, quantityInteger);
+
+                    int itemIdColumnIndex = cursor.getColumnIndex(InventoryEntry._ID);
+                    int itemId = cursor.getInt(itemIdColumnIndex);
+                    Uri mCurrentItemUri = ContentUris.withAppendedId(InventoryEntry.CONTENT_URI, itemId);
+
+                    context.getContentResolver().update(mCurrentItemUri, values, null, null);
+
+                    // TODO: fix the update weirdness
+
+
+                } else {
+                    Toast.makeText(context, "Can not reduce quantity to below 0.", Toast.LENGTH_SHORT).show();
+                }
+
+
+
+            }
+        });
+
         tvName.setText(name);
         tvPrice.setText(price);
         tvQuantity.setText(quantity);
+
     }
+
 }
