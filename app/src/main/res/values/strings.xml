@@ -26,7 +26,7 @@
     <string name="empty_view_subtitle_text">Get started by adding a item.</string>
 
     <string name="editor_activity_title_new_item">Add an Inventory Item</string>
-
+    <string name="editor_activity_title_display_item">Display an Inventory Item</string>
     <string name="editor_activity_title_edit_item">Edit an Inventory Item</string>
 
     <string name="editor_insert_item_success">Item saved</string>

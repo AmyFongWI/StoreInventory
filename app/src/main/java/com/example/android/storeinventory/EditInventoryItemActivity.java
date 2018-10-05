@@ -18,6 +18,8 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.android.storeinventory.data.InventoryContract.InventoryEntry;
@@ -33,6 +35,17 @@ public class EditInventoryItemActivity extends AppCompatActivity implements Load
     private EditText mSupplierNameText;
 
     private EditText mSupplierPhoneNumberText;
+
+    private TextView mDisplayProductNameText;
+
+    private TextView mDisplayProductQuantityText;
+
+    private TextView mDisplayProductPriceText;
+
+    private TextView mDisplaySupplierNameText;
+
+    private TextView mDisplaySupplierPhoneNumberText;
+
 
     /** Content URI for the existing inventory item (null if it's a new item) */
     private Uri mCurrentInventoryItemUri;
@@ -75,8 +88,18 @@ public class EditInventoryItemActivity extends AppCompatActivity implements Load
             // (It doesn't make sense to delete an item that hasn't been created yet.)
             invalidateOptionsMenu();
         } else {
-            // Otherwise this is an existing pet, so change app bar to say "Edit an Inventory Item"
-            setTitle(getString(R.string.editor_activity_title_edit_item));
+            // Otherwise this is an existing pet, so change app bar to say "Inventory Item"
+            setTitle(getString(R.string.editor_activity_title_display_item));
+            
+            LinearLayout productLinearView = findViewById(R.id.edit_productFields);
+            productLinearView.setVisibility(View.GONE);
+            LinearLayout supplierLinearView = findViewById(R.id.edit_supplierFields);
+            supplierLinearView.setVisibility(View.GONE);
+
+            productLinearView = findViewById(R.id.display_productFields);
+            productLinearView.setVisibility(View.VISIBLE);
+            supplierLinearView = findViewById(R.id.display_supplierFields);
+            supplierLinearView.setVisibility(View.VISIBLE);
 
             // Initialize a loader to read the item data from the database
             // and display the current values in the editor
@@ -89,6 +112,13 @@ public class EditInventoryItemActivity extends AppCompatActivity implements Load
 
         mSupplierNameText = (EditText) findViewById(R.id.edit_supplierName);
         mSupplierPhoneNumberText = (EditText) findViewById(R.id.edit_supplierPhoneNumber);
+
+        mDisplayProductNameText = (TextView) findViewById(R.id.display_productName);
+        mDisplayProductPriceText = (TextView) findViewById(R.id.display_productPrice);
+        mDisplayProductQuantityText = (TextView) findViewById(R.id.display_productQuantity);
+
+        mDisplaySupplierNameText = (TextView) findViewById(R.id.display_supplierName);
+        mDisplaySupplierPhoneNumberText = (TextView) findViewById(R.id.display_supplierPhone);
 
 
         mProductNameEditText.setOnTouchListener(mTouchListener);
@@ -268,6 +298,13 @@ public class EditInventoryItemActivity extends AppCompatActivity implements Load
             mProductQuantityText.setText(Integer.toString(quantity));
             mSupplierNameText.setText(supplierName);
             mSupplierPhoneNumberText.setText(supplierPhone);
+
+            // Update the views on the screen with the values from the database
+            mDisplayProductNameText.setText(name);
+            mDisplayProductPriceText.setText(Integer.toString(price));
+            mDisplayProductQuantityText.setText(Integer.toString(quantity));
+            mDisplaySupplierNameText.setText(supplierName);
+            mDisplaySupplierPhoneNumberText.setText(supplierPhone);
         }
     }
 
