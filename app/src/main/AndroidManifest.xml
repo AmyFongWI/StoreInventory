@@ -20,7 +20,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".AddInventoryItemActivity"
+            android:name=".EditInventoryItemActivity"
             android:label="@string/add_inventory_item_activity_title"
             android:theme="@style/EditorTheme"
             android:parentActivityName=".MainActivity">

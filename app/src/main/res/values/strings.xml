@@ -25,4 +25,22 @@
     <!-- Subtitle text for the empty view that prompts the user to add a pet [CHAR LIMIT=50] -->
     <string name="empty_view_subtitle_text">Get started by adding a item.</string>
 
+    <string name="editor_activity_title_new_item">Add an Inventory Item</string>
+
+    <string name="editor_activity_title_edit_item">Edit an Inventory Item</string>
+
+    <string name="editor_insert_item_success">Item saved</string>
+    <string name="editor_insert_item_fail">Error with saving item</string>
+
+    <string name="editor_update_item_success">Item updated</string>
+    <string name="editor_update_item_fail">Error with updating item</string>
+
+
+    <string name="unsaved_changes_dialog_msg">Discard your changes and quit editing?</string>
+    <string name="discard">Discard</string>
+    <string name="keep_editing">Keep Editing</string>
+
+    <string name="price_header">Price: </string>
+    <string name="quantity_header">Quantity: </string>
+
 </resources>

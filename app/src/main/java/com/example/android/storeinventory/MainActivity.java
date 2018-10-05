@@ -7,10 +7,8 @@ import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -19,11 +17,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.android.storeinventory.data.InventoryContract.InventoryEntry;
-import com.example.android.storeinventory.data.InventoryDbHelper;
 
 
 public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
@@ -32,7 +27,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     private ListView mInventoryListView;
 
     /** Identifier for the inventory data loader */
-    private static final int INTEVENTORY_LOADER = 0;
+    private static final int INVENTORY_LOADER = 0;
 
     InventoryCursorAdapter mInventoryCursorAdapter;
 
@@ -58,7 +53,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(MainActivity.this, AddInventoryItemActivity.class);
+                Intent intent = new Intent(MainActivity.this, EditInventoryItemActivity.class);
                 startActivity(intent);
             }
         });
@@ -77,8 +72,8 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         mInventoryListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-                // Create new intent to go to {@link EditorActivity}
-                Intent intent = new Intent(MainActivity.this, AddInventoryItemActivity.class);
+                // Create new intent to go to {@link EditInventoryItemActivity}
+                Intent intent = new Intent(MainActivity.this, EditInventoryItemActivity.class);
 
                 Uri currentInventoryUri = ContentUris.withAppendedId(InventoryEntry.CONTENT_URI, id);
 
@@ -89,7 +84,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                 startActivity(intent);
             }
         });
-        getLoaderManager().initLoader(INTEVENTORY_LOADER, null, this);
+        getLoaderManager().initLoader(INVENTORY_LOADER, null, this);
     }
 
     @Override
