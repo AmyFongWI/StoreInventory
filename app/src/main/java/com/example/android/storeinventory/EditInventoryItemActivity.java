@@ -46,6 +46,15 @@ public class EditInventoryItemActivity extends AppCompatActivity implements Load
 
     private TextView mDisplaySupplierPhoneNumberText;
 
+    enum MenuMode
+    {
+        Add,
+        Edit,
+        Display
+    }
+
+    MenuMode mMenuMode;
+
 
     /** Content URI for the existing inventory item (null if it's a new item) */
     private Uri mCurrentInventoryItemUri;
@@ -81,25 +90,21 @@ public class EditInventoryItemActivity extends AppCompatActivity implements Load
         // If the intent DOES NOT contain a item content URI, then we know that we are
         // creating a new tiem.
         if (mCurrentInventoryItemUri == null) {
+            // set the Menu to Add item menu options
+            mMenuMode = MenuMode.Add;
+            invalidateOptionsMenu();
+
             // This is a new item, so change the app bar to say "Add an Inventory Item"
             setTitle(getString(R.string.editor_activity_title_new_item));
 
-            // Invalidate the options menu, so the "Delete" menu option can be hidden.
-            // (It doesn't make sense to delete an item that hasn't been created yet.)
-            invalidateOptionsMenu();
         } else {
-            // Otherwise this is an existing pet, so change app bar to say "Inventory Item"
+            // set the Menu to Display item menu options
+            mMenuMode = MenuMode.Display;
+            invalidateOptionsMenu();
+            // Otherwise this is an existing item, so change app bar to say "Inventory Item"
             setTitle(getString(R.string.editor_activity_title_display_item));
-            
-            LinearLayout productLinearView = findViewById(R.id.edit_productFields);
-            productLinearView.setVisibility(View.GONE);
-            LinearLayout supplierLinearView = findViewById(R.id.edit_supplierFields);
-            supplierLinearView.setVisibility(View.GONE);
-
-            productLinearView = findViewById(R.id.display_productFields);
-            productLinearView.setVisibility(View.VISIBLE);
-            supplierLinearView = findViewById(R.id.display_supplierFields);
-            supplierLinearView.setVisibility(View.VISIBLE);
+            //Change to Display Item mode
+            displayItemMode();
 
             // Initialize a loader to read the item data from the database
             // and display the current values in the editor
@@ -137,7 +142,6 @@ public class EditInventoryItemActivity extends AppCompatActivity implements Load
 
         String supplierNameString = mSupplierNameText.getText().toString().trim();
         String supplierPhoneNumberString = mSupplierPhoneNumberText.getText().toString().trim();
-
 
         // Check if this is supposed to be a new pet
         // and check if all the fields in the editor are blank
@@ -209,7 +213,7 @@ public class EditInventoryItemActivity extends AppCompatActivity implements Load
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu options from the res/menu/menu_editor.xml file.
         // This adds menu items to the app bar.
-        getMenuInflater().inflate(R.menu.menu_add_inventory_item, menu);
+        getMenuInflater().inflate(R.menu.menu_edit_inventory_item, menu);
         return true;
     }
 
@@ -219,6 +223,17 @@ public class EditInventoryItemActivity extends AppCompatActivity implements Load
             case R.id.action_save:
                 saveInventoryItem();
                 finish();
+                return true;
+            case R.id.action_delete:
+                deleteInventoryItem();
+                finish();
+                return true;
+            case R.id.action_edit:
+                // go to edit mode so change the menu
+                mMenuMode = MenuMode.Edit;
+                invalidateOptionsMenu();
+                // and change field to edit mode
+                editItemMode();
                 return true;
             case android.R.id.home:
                 // If the item hasn't changed, continue with navigating up to parent activity
@@ -245,6 +260,38 @@ public class EditInventoryItemActivity extends AppCompatActivity implements Load
                 return true;
         }
         return  super.onOptionsItemSelected(item);
+    }
+
+    /**
+     * Changes what is button is display based on value in mMenuMode
+     * Must call invalidateOptionsMenu to trigger
+     * @param menu
+     * @return true
+     */
+    public boolean onPrepareOptionsMenu(Menu menu)
+    {
+        MenuItem saveButton = menu.findItem(R.id.action_save);
+        MenuItem editButton = menu.findItem(R.id.action_edit);
+        MenuItem deleteButton = menu.findItem(R.id.action_delete);
+
+        switch(mMenuMode){
+            case Display:
+                saveButton.setVisible(false);
+                editButton.setVisible(true);
+                deleteButton.setVisible(true);
+                return true;
+            case Add:
+                saveButton.setVisible(true);
+                editButton.setVisible(false);
+                deleteButton.setVisible(false);
+                return true;
+            case Edit:
+                saveButton.setVisible(true);
+                editButton.setVisible(false);
+                deleteButton.setVisible(true);
+                return true;
+        }
+        return true;
     }
 
     @Override
@@ -362,4 +409,60 @@ public class EditInventoryItemActivity extends AppCompatActivity implements Load
         // Show dialog that there are unsaved changes
         showUnsavedChangesDialog(discardButtonClickListener);
     }
+
+    private void displayItemMode() {
+        setTitle(getString(R.string.editor_activity_title_display_item));
+
+        LinearLayout productLinearView = findViewById(R.id.edit_productFields);
+        productLinearView.setVisibility(View.GONE);
+        LinearLayout supplierLinearView = findViewById(R.id.edit_supplierFields);
+        supplierLinearView.setVisibility(View.GONE);
+
+        productLinearView = findViewById(R.id.display_productFields);
+        productLinearView.setVisibility(View.VISIBLE);
+        supplierLinearView = findViewById(R.id.display_supplierFields);
+        supplierLinearView.setVisibility(View.VISIBLE);
+    }
+
+    private void editItemMode() {
+        setTitle(getString(R.string.editor_activity_title_edit_item));
+
+        LinearLayout productLinearView = findViewById(R.id.edit_productFields);
+        productLinearView.setVisibility(View.VISIBLE);
+        LinearLayout supplierLinearView = findViewById(R.id.edit_supplierFields);
+        supplierLinearView.setVisibility(View.VISIBLE);
+
+        productLinearView = findViewById(R.id.display_productFields);
+        productLinearView.setVisibility(View.GONE);
+        supplierLinearView = findViewById(R.id.display_supplierFields);
+        supplierLinearView.setVisibility(View.GONE);
+    }
+
+    /**
+     * Perform the deletion of the item in the database.
+     */
+    private void deleteInventoryItem() {
+        // Only perform the delete if this is an existing pet.
+        if (mCurrentInventoryItemUri != null) {
+            // Call the ContentResolver to delete the pet at the given content URI.
+            // Pass in null for the selection and selection args because the mCurrentPetUri
+            // content URI already identifies the pet that we want.
+            int rowsDeleted = getContentResolver().delete(mCurrentInventoryItemUri, null, null);
+
+            // Show a toast message depending on whether or not the delete was successful.
+            if (rowsDeleted == 0) {
+                // If no rows were deleted, then there was an error with the delete.
+                Toast.makeText(this, getString(R.string.editor_delete_item_failed),
+                        Toast.LENGTH_SHORT).show();
+            } else {
+                // Otherwise, the delete was successful and we can display a toast.
+                Toast.makeText(this, getString(R.string.editor_delete_item_success),
+                        Toast.LENGTH_SHORT).show();
+            }
+        }
+
+        // Close the activity
+        finish();
+    }
+
 }

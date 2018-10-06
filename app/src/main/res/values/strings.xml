@@ -23,11 +23,11 @@
     <string name="empty_view_title_text">There are no items in the inventory.</string>
 
     <!-- Subtitle text for the empty view that prompts the user to add a pet [CHAR LIMIT=50] -->
-    <string name="empty_view_subtitle_text">Get started by adding a item.</string>
+    <string name="empty_view_subtitle_text">Get started by adding an item.</string>
 
-    <string name="editor_activity_title_new_item">Add an Inventory Item</string>
-    <string name="editor_activity_title_display_item">Display an Inventory Item</string>
-    <string name="editor_activity_title_edit_item">Edit an Inventory Item</string>
+    <string name="editor_activity_title_new_item">Add Item</string>
+    <string name="editor_activity_title_display_item">Display Item</string>
+    <string name="editor_activity_title_edit_item">Edit Item</string>
 
     <string name="editor_insert_item_success">Item saved</string>
     <string name="editor_insert_item_fail">Error with saving item</string>
@@ -44,5 +44,12 @@
     <string name="quantity_header">Quantity: </string>
 
     <string name="action_delete_all_entries">Delete all items</string>
+    <string name="action_delete">Delete</string>
+    <string name="action_edit">Edit</string>
+
+    <string name="editor_delete_item_failed">Edit item failed</string>
+    <string name="editor_delete_item_success">Edit item successful.</string>
+
+
 
 </resources>
