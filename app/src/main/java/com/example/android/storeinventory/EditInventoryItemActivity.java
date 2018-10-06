@@ -465,4 +465,12 @@ public class EditInventoryItemActivity extends AppCompatActivity implements Load
         finish();
     }
 
+    public void decreaseQuantity (View view) {
+
+    }
+
+    public void increaseQuantity (View view) {
+
+    }
+
 }

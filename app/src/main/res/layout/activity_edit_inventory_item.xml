@@ -63,11 +63,34 @@
                 android:hint="@string/hint_product_price"
                 android:padding="9dp"
                 style="@style/EditorFieldStyle" />
-            <TextView
-                android:id="@+id/display_productQuantity"
-                android:hint="@string/hint_product_quantity"
-                android:padding="9dp"
-                style="@style/EditorFieldStyle" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <Button
+                    android:layout_weight="1"
+                    android:onClick="decreaseQuantity"
+                    android:text="-"
+                    style="@style/ButtonStyle"/>
+
+                <TextView
+                    android:id="@+id/display_productQuantity"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:fontFamily="sans-serif-light"
+                    android:hint="@string/hint_product_quantity"
+                    android:padding="9dp"
+                    android:textAlignment="center"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
+                <Button
+                    android:onClick="increaseQuantity"
+                    android:layout_weight="1"
+                    android:text="+"
+                    style="@style/ButtonStyle"/>
+
+
+            </LinearLayout>
         </LinearLayout>
     </LinearLayout>
 
@@ -93,6 +116,7 @@
                 android:hint="@string/hint_supplier_name"
                 android:inputType="textCapWords"
                 style="@style/EditorFieldStyle" />
+
             <EditText
                 android:id="@+id/edit_supplierPhoneNumber"
                 style="@style/EditorFieldStyle"
@@ -121,7 +145,6 @@
         </LinearLayout>
 
     </LinearLayout>
-
-
+    
 
 </LinearLayout>
