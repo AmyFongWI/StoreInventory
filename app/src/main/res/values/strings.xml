@@ -55,6 +55,6 @@
     <string name="call">Call</string>
     <string name="save_fail_empty_fields">Save failed. Must have all fields populated.</string>
 
-
-
+    <string name="sale_failed">Sale failed.</string>
+    <string name="sale_success">Sale was successful.</string>
 </resources>

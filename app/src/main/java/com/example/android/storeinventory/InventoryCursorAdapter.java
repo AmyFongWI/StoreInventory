@@ -56,57 +56,61 @@ public class InventoryCursorAdapter extends CursorAdapter {
         // Find fields to populate
         TextView tvName = (TextView) view.findViewById(R.id.name);
         TextView tvPrice = (TextView) view.findViewById(R.id.price);
-        TextView tvQuantity = (TextView) view.findViewById(R.id.quantity);
+        final TextView tvQuantity = (TextView) view.findViewById(R.id.quantity);
 
-        String name = cursor.getString(cursor.getColumnIndexOrThrow(InventoryEntry.COLUMN_PRODUCT_NAME));
-        int price = cursor.getInt(cursor.getColumnIndexOrThrow(InventoryEntry.COLUMN_PRICE));
-        int quantity = cursor.getInt(cursor.getColumnIndexOrThrow(InventoryEntry.COLUMN_QUANTITY));
+        int nameColumnIndex = cursor.getColumnIndex(InventoryEntry.COLUMN_PRODUCT_NAME);
+        int priceColumnIndex = cursor.getColumnIndex(InventoryEntry.COLUMN_PRICE);
+        int quantityColumnIndex = cursor.getColumnIndex(InventoryEntry.COLUMN_QUANTITY);
 
+        final int itemId = cursor.getInt(cursor.getColumnIndex(InventoryEntry._ID));
 
-        Button saleButton = (Button) view.findViewById(R.id.sale_button);
-
-         final int position = cursor.getPosition();
-
-        saleButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Perform action on click
-                cursor.moveToPosition(position);
-
-                int quantityInteger = cursor.getInt(cursor.getColumnIndexOrThrow(InventoryEntry.COLUMN_QUANTITY));
-
-                Log.i(LOG_TAG, "Inside on Click " + cursor.getPosition() + " with quantity: " + quantityInteger );
-
-                if(quantityInteger > 0) {
-                    quantityInteger--;
-
-                    ContentValues values = new ContentValues();
-                    values.put(InventoryEntry.COLUMN_PRODUCT_NAME, cursor.getString(cursor.getColumnIndexOrThrow(InventoryEntry.COLUMN_PRODUCT_NAME)));
-                    values.put(InventoryEntry.COLUMN_PRICE, cursor.getInt(cursor.getColumnIndexOrThrow(InventoryEntry.COLUMN_PRICE)));
-                    values.put(InventoryEntry.COLUMN_QUANTITY, quantityInteger);
-
-                    int itemIdColumnIndex = cursor.getColumnIndex(InventoryEntry._ID);
-                    int itemId = cursor.getInt(itemIdColumnIndex);
-                    Uri mCurrentItemUri = ContentUris.withAppendedId(InventoryEntry.CONTENT_URI, itemId);
-
-                    context.getContentResolver().update(mCurrentItemUri, values, null, null);
-
-                    // TODO: fix the update weirdness
-
-
-                } else {
-                    Toast.makeText(context, "Can not reduce quantity to below 0.", Toast.LENGTH_SHORT).show();
-                }
-
-
-
-            }
-        });
+        String name = cursor.getString(nameColumnIndex);
+        int price = cursor.getInt(priceColumnIndex);
+        final int quantity = cursor.getInt(quantityColumnIndex);
 
         tvName.setText(name);
         tvPrice.setText(Integer.toString(price));
         tvQuantity.setText(Integer.toString(quantity));
 
-    }
 
+        Button saleButton = (Button) view.findViewById(R.id.sale_button);
+
+        saleButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // Perform action on click
+                if(quantity > 0) {
+                    int newQuantity = quantity - 1;
+
+                    Log.i(LOG_TAG, "Inside on Click " + cursor.getPosition() + " with quantity: " + newQuantity );
+
+
+                    // Update the view with the new quantity value
+                    tvQuantity.setText(Integer.toString(newQuantity));
+
+                    // Now update the value in the db
+                    ContentValues values = new ContentValues();
+                    values.put(InventoryEntry.COLUMN_QUANTITY, newQuantity);
+
+                    Uri mCurrentItemUri = ContentUris.withAppendedId(InventoryEntry.CONTENT_URI, itemId);
+
+                    int rowsUpdated = context.getContentResolver().update(
+                            mCurrentItemUri,
+                            values,
+                            null,
+                            null);
+
+                    if (rowsUpdated == 1) {
+                        Toast.makeText(context, R.string.sale_success, Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(context, R.string.sale_failed, Toast.LENGTH_SHORT).show();
+                    }
+
+
+                } else {
+                    Toast.makeText(context, "Can not reduce quantity to below 0.", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+    }
 }

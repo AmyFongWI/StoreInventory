@@ -141,20 +141,14 @@ public class InventoryProvider extends ContentProvider {
 
         // Check that the price is valid
         Integer price = values.getAsInteger(InventoryEntry.COLUMN_PRICE);
-        if (price == null || price < 0) {
+        if (price != null && price < 0) {
             throw new IllegalArgumentException("Inventory requires valid price");
         }
 
         // If the quantity is provided, check that it's greater than 0
         Integer quantity = values.getAsInteger(InventoryEntry.COLUMN_QUANTITY);
-        if (quantity == null || quantity < 0) {
+        if (quantity != null && quantity < 0) {
             throw new IllegalArgumentException("Inventory requires valid quantity");
-        }
-
-        // Check that the supplier name is not null
-        String supplierName = values.getAsString(InventoryEntry.COLUMN_SUPPLIER_NAME);
-        if (supplierName == null) {
-            throw new IllegalArgumentException("Product requires a supplier name");
         }
 
         // Get writeable database
@@ -238,20 +232,14 @@ public class InventoryProvider extends ContentProvider {
 
         // Check that the price is valid
         Integer price = values.getAsInteger(InventoryEntry.COLUMN_PRICE);
-        if (price == null || price < 0) {
+        if (price != null && price < 0) {
             throw new IllegalArgumentException("Inventory requires valid price");
         }
 
         // If the quantity is provided, check that it's greater than 0
         Integer quantity = values.getAsInteger(InventoryEntry.COLUMN_QUANTITY);
-        if (quantity == null || quantity < 0) {
+        if (quantity != null && quantity < 0) {
             throw new IllegalArgumentException("Inventory requires valid quantity");
-        }
-
-        // Check that the supplier name is not null
-        String supplierName = values.getAsString(InventoryEntry.COLUMN_SUPPLIER_NAME);
-        if (supplierName == null) {
-            throw new IllegalArgumentException("Product requires a supplier name");
         }
 
         // No need to check the breed, any value is valid (including null).
