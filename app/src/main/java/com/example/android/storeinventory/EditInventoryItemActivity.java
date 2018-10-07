@@ -18,6 +18,7 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -132,11 +133,24 @@ public class EditInventoryItemActivity extends AppCompatActivity implements Load
 
         mSupplierNameText.setOnTouchListener(mTouchListener);
         mSupplierPhoneNumberText.setOnTouchListener(mTouchListener);
+
+
+        // Set the onClickLister to open the dialer on the supplier phone number
+        ImageButton callButton = (ImageButton) findViewById(R.id.callButton);
+        callButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String phoneNumber = mDisplaySupplierPhoneNumberText.getText().toString().trim();
+
+                Intent callIntent = new Intent(Intent.ACTION_DIAL);
+                callIntent.setData(Uri.parse("tel:" + phoneNumber));
+                startActivity(callIntent);
+            }
+        });
     }
 
     private void saveInventoryItem() {
         //Read from input fields
-
         String productNameString;
         String priceString;
         String quantityString;
@@ -482,6 +496,10 @@ public class EditInventoryItemActivity extends AppCompatActivity implements Load
         finish();
     }
 
+    /**
+     *  Decrease Quantity by 1 in Display mode
+     * @param view
+     */
     public void decreaseQuantity (View view) {
         String quantityString = mDisplayProductQuantityText.getText().toString().trim();
         int quantityNumber = Integer.parseInt(quantityString);
@@ -497,6 +515,10 @@ public class EditInventoryItemActivity extends AppCompatActivity implements Load
 
     }
 
+    /**
+     * Increase Quantity by 1 in Display mode
+     * @param view
+     */
     public void increaseQuantity (View view) {
         String quantityString = mDisplayProductQuantityText.getText().toString().trim();
         int quantityNumber = Integer.parseInt(quantityString);
@@ -505,5 +527,6 @@ public class EditInventoryItemActivity extends AppCompatActivity implements Load
 
         saveInventoryItem();
     }
+
 
 }

@@ -51,4 +51,6 @@
     <string name="editor_delete_item_success">Edit item successful.</string>
 
     <string name="editor_decrease_quantity_failed">Decrease Quantity Failed</string>
+
+    <string name="call">Call</string>
 </resources>
