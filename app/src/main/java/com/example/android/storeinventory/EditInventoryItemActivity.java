@@ -47,8 +47,7 @@ public class EditInventoryItemActivity extends AppCompatActivity implements Load
 
     private TextView mDisplaySupplierPhoneNumberText;
 
-    enum MenuMode
-    {
+    enum MenuMode {
         Add,
         Edit,
         Display
@@ -57,13 +56,19 @@ public class EditInventoryItemActivity extends AppCompatActivity implements Load
     MenuMode mMenuMode;
 
 
-    /** Content URI for the existing inventory item (null if it's a new item) */
+    /**
+     * Content URI for the existing inventory item (null if it's a new item)
+     */
     private Uri mCurrentInventoryItemUri;
 
-    /** Identifier for the inventory item data loader */
+    /**
+     * Identifier for the inventory item data loader
+     */
     private static final int EXISTING_INVENTORY_ITEM_LOADER = 0;
 
-    /** Boolean flag that keeps track of whether the inventory item has been edited (true) or not (false) */
+    /**
+     * Boolean flag that keeps track of whether the inventory item has been edited (true) or not (false)
+     */
     private boolean mItemHasChanged = false;
 
     /**
@@ -158,20 +163,22 @@ public class EditInventoryItemActivity extends AppCompatActivity implements Load
         String supplierNameString;
         String supplierPhoneNumberString;
 
-        if(mMenuMode == MenuMode.Display) {
-             productNameString = mDisplayProductNameText.getText().toString().trim();
-             priceString = mDisplayProductPriceText.getText().toString().trim();
-             quantityString = mDisplayProductQuantityText.getText().toString().trim();
+        // In Display menu mode, fields are not editable, and stored in mDisplay*Text
+        if (mMenuMode == MenuMode.Display) {
+            productNameString = mDisplayProductNameText.getText().toString().trim();
+            priceString = mDisplayProductPriceText.getText().toString().trim();
+            quantityString = mDisplayProductQuantityText.getText().toString().trim();
 
-             supplierNameString = mDisplaySupplierNameText.getText().toString().trim();
-             supplierPhoneNumberString = mDisplaySupplierPhoneNumberText.getText().toString().trim();
+            supplierNameString = mDisplaySupplierNameText.getText().toString().trim();
+            supplierPhoneNumberString = mDisplaySupplierPhoneNumberText.getText().toString().trim();
+            // in Add or Edit menu mode, the fields are editable and stored in m*EditText
         } else {
-             productNameString = mProductNameEditText.getText().toString().trim();
-             priceString = mProductPriceText.getText().toString().trim();
-             quantityString = mProductQuantityText.getText().toString().trim();
+            productNameString = mProductNameEditText.getText().toString().trim();
+            priceString = mProductPriceText.getText().toString().trim();
+            quantityString = mProductQuantityText.getText().toString().trim();
 
-             supplierNameString = mSupplierNameText.getText().toString().trim();
-             supplierPhoneNumberString = mSupplierPhoneNumberText.getText().toString().trim();
+            supplierNameString = mSupplierNameText.getText().toString().trim();
+            supplierPhoneNumberString = mSupplierPhoneNumberText.getText().toString().trim();
         }
 
         // Check if this is supposed to be a new pet
@@ -196,47 +203,57 @@ public class EditInventoryItemActivity extends AppCompatActivity implements Load
         }
         values.put(InventoryEntry.COLUMN_PRICE, price);
 
+
         int quantity = 0;
         if (!TextUtils.isEmpty(quantityString)) {
             quantity = Integer.parseInt(quantityString);
         }
         values.put(InventoryEntry.COLUMN_QUANTITY, quantity);
+
+
         values.put(InventoryEntry.COLUMN_SUPPLIER_NAME, supplierNameString);
         values.put(InventoryEntry.COLUMN_SUPPLIER_PHONE_NUMBER, supplierPhoneNumberString);
 
-        // Determine if this is a new or existing pet by checking if mCurrentInventoryItemUri is null or not
-        if (mCurrentInventoryItemUri == null) {
-            // This is a NEW inventory item, so insert a new item into the provider,
-            // returning the content URI for the new pet.
-            Uri newUri = getContentResolver().insert(InventoryEntry.CONTENT_URI, values);
 
-            // Show a toast message depending on whether or not the insertion was successful.
-            if (newUri == null) {
-                // If the new content URI is null, then there was an error with insertion.
-                Toast.makeText(this, getString(R.string.editor_insert_item_fail),
-                        Toast.LENGTH_SHORT).show();
-            } else {
-                // Otherwise, the insertion was successful and we can display a toast.
-                Toast.makeText(this, getString(R.string.editor_insert_item_success),
-                        Toast.LENGTH_SHORT).show();
-            }
-        } else {
-            // Otherwise this is an EXISTING item, so update the item with content URI: mCurrentInventoryItemUri
-            // and pass in the new ContentValues. Pass in null for the selection and selection args
-            // because mCurrentInventoryItemUri will already identify the correct row in the database that
-            // we want to modify.
-            int rowsAffected = getContentResolver().update(mCurrentInventoryItemUri, values, null, null);
+        try {
+            // Determine if this is a new or existing pet by checking if mCurrentInventoryItemUri is null or not
+            if (mCurrentInventoryItemUri == null) {
+                // This is a NEW inventory item, so insert a new item into the provider,
+                // returning the content URI for the new pet.
 
-            // Show a toast message depending on whether or not the update was successful.
-            if (rowsAffected == 0) {
-                // If no rows were affected, then there was an error with the update.
-                Toast.makeText(this, getString(R.string.editor_update_item_fail),
-                        Toast.LENGTH_SHORT).show();
+                Uri newUri = getContentResolver().insert(InventoryEntry.CONTENT_URI, values);
+
+                // Show a toast message depending on whether or not the insertion was successful.
+                if (newUri == null) {
+                    // If the new content URI is null, then there was an error with insertion.
+                    Toast.makeText(this, getString(R.string.editor_insert_item_fail),
+                            Toast.LENGTH_SHORT).show();
+                } else {
+                    // Otherwise, the insertion was successful and we can display a toast.
+                    Toast.makeText(this, getString(R.string.editor_insert_item_success),
+                            Toast.LENGTH_SHORT).show();
+                }
             } else {
-                // Otherwise, the update was successful and we can display a toast.
-                Toast.makeText(this, getString(R.string.editor_update_item_success),
-                        Toast.LENGTH_SHORT).show();
+                // Otherwise this is an EXISTING item, so update the item with content URI: mCurrentInventoryItemUri
+                // and pass in the new ContentValues. Pass in null for the selection and selection args
+                // because mCurrentInventoryItemUri will already identify the correct row in the database that
+                // we want to modify.
+                int rowsAffected = getContentResolver().update(mCurrentInventoryItemUri, values, null, null);
+
+                // Show a toast message depending on whether or not the update was successful.
+                if (rowsAffected == 0) {
+                    // If no rows were affected, then there was an error with the update.
+                    Toast.makeText(this, getString(R.string.editor_update_item_fail),
+                            Toast.LENGTH_SHORT).show();
+                } else {
+                    // Otherwise, the update was successful and we can display a toast.
+                    Toast.makeText(this, getString(R.string.editor_update_item_success),
+                            Toast.LENGTH_SHORT).show();
+                }
             }
+        } catch (IllegalArgumentException e) {
+            // this will trigger a toast message with the IllegalArgumentException message on with the bad insert or update of value
+            Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -290,22 +307,22 @@ public class EditInventoryItemActivity extends AppCompatActivity implements Load
                 showUnsavedChangesDialog(discardButtonClickListener);
                 return true;
         }
-        return  super.onOptionsItemSelected(item);
+        return super.onOptionsItemSelected(item);
     }
 
     /**
      * Changes what is button is display based on value in mMenuMode
      * Must call invalidateOptionsMenu to trigger
+     *
      * @param menu
      * @return true
      */
-    public boolean onPrepareOptionsMenu(Menu menu)
-    {
+    public boolean onPrepareOptionsMenu(Menu menu) {
         MenuItem saveButton = menu.findItem(R.id.action_save);
         MenuItem editButton = menu.findItem(R.id.action_edit);
         MenuItem deleteButton = menu.findItem(R.id.action_delete);
 
-        switch(mMenuMode){
+        switch (mMenuMode) {
             case Display:
                 saveButton.setVisible(false);
                 editButton.setVisible(true);
@@ -412,7 +429,6 @@ public class EditInventoryItemActivity extends AppCompatActivity implements Load
                 }
             }
         });
-
         // Create and show the AlertDialog
         AlertDialog alertDialog = builder.create();
         alertDialog.show();
@@ -425,7 +441,6 @@ public class EditInventoryItemActivity extends AppCompatActivity implements Load
             super.onBackPressed();
             return;
         }
-
         // Otherwise if there are unsaved changes, setup a dialog to warn the user.
         // Create a click listener to handle the user confirming that changes should be discarded.
         DialogInterface.OnClickListener discardButtonClickListener =
@@ -491,20 +506,20 @@ public class EditInventoryItemActivity extends AppCompatActivity implements Load
                         Toast.LENGTH_SHORT).show();
             }
         }
-
         // Close the activity
         finish();
     }
 
     /**
-     *  Decrease Quantity by 1 in Display mode
+     * Decrease Quantity by 1 in Display mode
+     *
      * @param view
      */
-    public void decreaseQuantity (View view) {
+    public void decreaseQuantity(View view) {
         String quantityString = mDisplayProductQuantityText.getText().toString().trim();
         int quantityNumber = Integer.parseInt(quantityString);
 
-        if(quantityNumber <= 0) {
+        if (quantityNumber <= 0) {
             Toast.makeText(this, getString(R.string.editor_decrease_quantity_failed),
                     Toast.LENGTH_SHORT).show();
         } else {
@@ -517,9 +532,10 @@ public class EditInventoryItemActivity extends AppCompatActivity implements Load
 
     /**
      * Increase Quantity by 1 in Display mode
+     *
      * @param view
      */
-    public void increaseQuantity (View view) {
+    public void increaseQuantity(View view) {
         String quantityString = mDisplayProductQuantityText.getText().toString().trim();
         int quantityNumber = Integer.parseInt(quantityString);
         quantityNumber++;
@@ -527,6 +543,5 @@ public class EditInventoryItemActivity extends AppCompatActivity implements Load
 
         saveInventoryItem();
     }
-
 
 }
