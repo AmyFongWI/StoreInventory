@@ -154,7 +154,7 @@ public class EditInventoryItemActivity extends AppCompatActivity implements Load
         });
     }
 
-    private void saveInventoryItem() {
+    private boolean saveInventoryItem() {
         //Read from input fields
         String productNameString;
         String priceString;
@@ -162,6 +162,7 @@ public class EditInventoryItemActivity extends AppCompatActivity implements Load
 
         String supplierNameString;
         String supplierPhoneNumberString;
+
 
         // In Display menu mode, fields are not editable, and stored in mDisplay*Text
         if (mMenuMode == MenuMode.Display) {
@@ -181,14 +182,24 @@ public class EditInventoryItemActivity extends AppCompatActivity implements Load
             supplierPhoneNumberString = mSupplierPhoneNumberText.getText().toString().trim();
         }
 
-        // Check if this is supposed to be a new pet
+        // Check if any of the field are empty, if they are don't save
+        if (TextUtils.isEmpty(productNameString) || TextUtils.isEmpty(priceString) ||
+                TextUtils.isEmpty(quantityString) ||
+                TextUtils.isEmpty(supplierNameString) || TextUtils.isEmpty(supplierPhoneNumberString)) {
+
+            Toast.makeText(this, getString(R.string.save_fail_empty_fields), Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
+        // Check if this is supposed to be a new item
         // and check if all the fields in the editor are blank
         if (mCurrentInventoryItemUri == null &&
                 TextUtils.isEmpty(productNameString) && TextUtils.isEmpty(priceString) &&
+                TextUtils.isEmpty(quantityString) &&
                 TextUtils.isEmpty(supplierNameString) && TextUtils.isEmpty(supplierPhoneNumberString)) {
             // Since no fields were modified, we can return early without creating a new item.
             // No need to create ContentValues and no need to do any ContentProvider operations.
-            return;
+            return false;
         }
 
         // Create a ContentValues object where column names are the keys,
@@ -200,8 +211,8 @@ public class EditInventoryItemActivity extends AppCompatActivity implements Load
         int price = 0;
         if (!TextUtils.isEmpty(priceString)) {
             price = Integer.parseInt(priceString);
+            values.put(InventoryEntry.COLUMN_PRICE, price);
         }
-        values.put(InventoryEntry.COLUMN_PRICE, price);
 
 
         int quantity = 0;
@@ -255,6 +266,7 @@ public class EditInventoryItemActivity extends AppCompatActivity implements Load
             // this will trigger a toast message with the IllegalArgumentException message on with the bad insert or update of value
             Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
         }
+        return true;
     }
 
     @Override
@@ -269,8 +281,9 @@ public class EditInventoryItemActivity extends AppCompatActivity implements Load
     public boolean onOptionsItemSelected(MenuItem item) {
         switch ((item.getItemId())) {
             case R.id.action_save:
-                saveInventoryItem();
-                finish();
+                if (saveInventoryItem()) {
+                    finish();
+                }
                 return true;
             case R.id.action_delete:
                 deleteInventoryItem();

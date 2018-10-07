@@ -81,6 +81,8 @@ public class InventoryCursorAdapter extends CursorAdapter {
                     quantityInteger--;
 
                     ContentValues values = new ContentValues();
+                    values.put(InventoryEntry.COLUMN_PRODUCT_NAME, cursor.getString(cursor.getColumnIndexOrThrow(InventoryEntry.COLUMN_PRODUCT_NAME)));
+                    values.put(InventoryEntry.COLUMN_PRICE, cursor.getInt(cursor.getColumnIndexOrThrow(InventoryEntry.COLUMN_PRICE)));
                     values.put(InventoryEntry.COLUMN_QUANTITY, quantityInteger);
 
                     int itemIdColumnIndex = cursor.getColumnIndex(InventoryEntry._ID);
