@@ -136,12 +136,29 @@ public class EditInventoryItemActivity extends AppCompatActivity implements Load
 
     private void saveInventoryItem() {
         //Read from input fields
-        String productNameString = mProductNameEditText.getText().toString().trim();
-        String priceString = mProductPriceText.getText().toString().trim();
-        String quantityString = mProductQuantityText.getText().toString().trim();
 
-        String supplierNameString = mSupplierNameText.getText().toString().trim();
-        String supplierPhoneNumberString = mSupplierPhoneNumberText.getText().toString().trim();
+        String productNameString;
+        String priceString;
+        String quantityString;
+
+        String supplierNameString;
+        String supplierPhoneNumberString;
+
+        if(mMenuMode == MenuMode.Display) {
+             productNameString = mDisplayProductNameText.getText().toString().trim();
+             priceString = mDisplayProductPriceText.getText().toString().trim();
+             quantityString = mDisplayProductQuantityText.getText().toString().trim();
+
+             supplierNameString = mDisplaySupplierNameText.getText().toString().trim();
+             supplierPhoneNumberString = mDisplaySupplierPhoneNumberText.getText().toString().trim();
+        } else {
+             productNameString = mProductNameEditText.getText().toString().trim();
+             priceString = mProductPriceText.getText().toString().trim();
+             quantityString = mProductQuantityText.getText().toString().trim();
+
+             supplierNameString = mSupplierNameText.getText().toString().trim();
+             supplierPhoneNumberString = mSupplierPhoneNumberText.getText().toString().trim();
+        }
 
         // Check if this is supposed to be a new pet
         // and check if all the fields in the editor are blank
@@ -466,11 +483,27 @@ public class EditInventoryItemActivity extends AppCompatActivity implements Load
     }
 
     public void decreaseQuantity (View view) {
+        String quantityString = mDisplayProductQuantityText.getText().toString().trim();
+        int quantityNumber = Integer.parseInt(quantityString);
+
+        if(quantityNumber <= 0) {
+            Toast.makeText(this, getString(R.string.editor_decrease_quantity_failed),
+                    Toast.LENGTH_SHORT).show();
+        } else {
+            quantityNumber--;
+            mDisplayProductQuantityText.setText(Integer.toString(quantityNumber));
+            saveInventoryItem();
+        }
 
     }
 
     public void increaseQuantity (View view) {
+        String quantityString = mDisplayProductQuantityText.getText().toString().trim();
+        int quantityNumber = Integer.parseInt(quantityString);
+        quantityNumber++;
+        mDisplayProductQuantityText.setText(Integer.toString(quantityNumber));
 
+        saveInventoryItem();
     }
 
 }
