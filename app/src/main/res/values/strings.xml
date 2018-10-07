@@ -57,4 +57,10 @@
 
     <string name="sale_failed">Sale failed.</string>
     <string name="sale_success">Sale was successful.</string>
+
+    <string name="delete_item_confirmation">Are you sure you want to delete item?</string>
+    <string name="delete">Delete</string>
+    <string name="cancel">Cancel</string>
+
+    <string name="delete_all_item_confirmation">Are you sure you want to delete all items?</string>
 </resources>

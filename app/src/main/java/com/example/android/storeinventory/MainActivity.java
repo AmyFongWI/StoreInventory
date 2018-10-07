@@ -1,15 +1,18 @@
 package com.example.android.storeinventory;
 
+import android.app.AlertDialog;
 import android.app.LoaderManager;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.CursorLoader;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -107,7 +110,15 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                 insertGenericInventoryItem();
                 return true;
             case R.id.action_delete_all_entries:
-                deleteAllItems();
+                DialogInterface.OnClickListener deleteAllButtonListener =
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                // User clicked "Delete" button, delete the item then navigate to parent activity.
+                                deleteAllItems();
+                            }
+                        };
+                showDeleteAllConfirmationDialog(deleteAllButtonListener);
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -147,4 +158,29 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         int rowsDeleted = getContentResolver().delete(InventoryEntry.CONTENT_URI, null, null);
         Log.v(LOG_TAG, rowsDeleted + " rows deleted from inventory database");
     }
+
+    /**
+     * Confirmation dialog for deleting the item
+     * @param deleteAllButtonConfirmListener
+     */
+    private void showDeleteAllConfirmationDialog(
+            DialogInterface.OnClickListener deleteAllButtonConfirmListener) {
+        // Create an AlertDialog.Builder and set the message, and click listeners
+        // for the positive and negative buttons on the dialog.
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(R.string.delete_all_item_confirmation);
+        builder.setPositiveButton(R.string.delete, deleteAllButtonConfirmListener);
+        builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                // User clicked the "Cancel" button, so dismiss the dialog
+                if (dialog != null) {
+                    dialog.dismiss();
+                }
+            }
+        });
+        // Create and show the AlertDialog
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
+    }
+
 }

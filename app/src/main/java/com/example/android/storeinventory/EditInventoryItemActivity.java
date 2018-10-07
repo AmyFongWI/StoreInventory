@@ -286,8 +286,16 @@ public class EditInventoryItemActivity extends AppCompatActivity implements Load
                 }
                 return true;
             case R.id.action_delete:
-                deleteInventoryItem();
-                finish();
+                DialogInterface.OnClickListener deleteButtonClickListener =
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                // User clicked "Delete" button, delete the item then navigate to parent activity.
+                                deleteInventoryItem();
+                                NavUtils.navigateUpFromSameTask(EditInventoryItemActivity.this);
+                            }
+                        };
+                showDeleteConfirmationDialog(deleteButtonClickListener);
                 return true;
             case R.id.action_edit:
                 // go to edit mode so change the menu
@@ -303,7 +311,6 @@ public class EditInventoryItemActivity extends AppCompatActivity implements Load
                     NavUtils.navigateUpFromSameTask(EditInventoryItemActivity.this);
                     return true;
                 }
-
                 // Otherwise if there are unsaved changes, setup a dialog to warn the user.
                 // Create a click listener to handle the user confirming that
                 // changes should be discarded.
@@ -436,7 +443,7 @@ public class EditInventoryItemActivity extends AppCompatActivity implements Load
         builder.setNegativeButton(R.string.keep_editing, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
                 // User clicked the "Keep editing" button, so dismiss the dialog
-                // and continue editing the pet.
+                // and continue editing the item.
                 if (dialog != null) {
                     dialog.dismiss();
                 }
@@ -555,6 +562,31 @@ public class EditInventoryItemActivity extends AppCompatActivity implements Load
         mDisplayProductQuantityText.setText(Integer.toString(quantityNumber));
 
         saveInventoryItem();
+    }
+
+    /**
+     * Confirmation dialog for deleting the item
+     * @param deleteButtonConfirmListener
+     */
+    private void showDeleteConfirmationDialog(
+            DialogInterface.OnClickListener deleteButtonConfirmListener) {
+        // Create an AlertDialog.Builder and set the message, and click listeners
+        // for the positive and negative buttons on the dialog.
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(R.string.delete_item_confirmation);
+        builder.setPositiveButton(R.string.delete, deleteButtonConfirmListener);
+        builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                // User clicked the "Cancel" button, so dismiss the dialog
+                // and continue editing the item.
+                if (dialog != null) {
+                    dialog.dismiss();
+                }
+            }
+        });
+        // Create and show the AlertDialog
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
     }
 
 }
